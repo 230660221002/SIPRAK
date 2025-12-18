@@ -159,7 +159,7 @@ SIPRAK/
 | PUT | `/api/borrowings/:id` | Update peminjaman | ✅ |
 | DELETE | `/api/borrowings/:id` | Hapus peminjaman | ✅ |
 
-> **💡 Catatan:** Untuk dokumentasi API lengkap, lihat [Backend API Documentation](./backend/README.md#dokumentasi-api)
+> **💡 Catatan:** Untuk dokumentasi API lengkap, lihat [Backend API Documentation](./backend/readme.md#dokumentasi-api)
 
 ---
 
