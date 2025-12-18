@@ -147,6 +147,74 @@ Authorization: Bearer <token>
 
 ---
 
+### Update Data Peminjaman
+
+**Endpoint**
+
+```
+PUT /borrowings/:id
+```
+
+**Deskripsi**  
+Digunakan untuk memperbarui data peminjaman ruang atau fasilitas kampus. Pengguna hanya dapat memperbarui data peminjaman miliknya sendiri.
+
+**Header**
+
+```
+Authorization: Bearer <token>
+```
+
+**Parameter URL**
+
+```
+id: number (ID peminjaman)
+```
+
+**Request Body**
+
+```json
+{
+  "title": "Seminar Nasional",
+  "facility": "Ruang Aula",
+  "borrowDate": "2025-12-22",
+  "returnDate": "2025-12-22",
+  "status": "pending"
+}
+```
+
+Field yang dikirim akan memperbarui data lama. Field `status` dapat diubah sesuai kebutuhan sistem.
+
+**Response Sukses**
+
+```json
+{
+  "message": "Borrowing updated successfully"
+}
+```
+
+**Response Gagal (Data Tidak Ditemukan)**
+
+```json
+{
+  "message": "Borrowing not found"
+}
+```
+
+**Response Gagal (Bukan Pemilik Data)**
+
+```json
+{
+  "message": "Access denied"
+}
+```
+
+**Response Validasi Gagal**
+
+```json
+{
+  "message": "Validation error"
+}
+
 ### Hapus Data Peminjaman
 
 **Endpoint**
