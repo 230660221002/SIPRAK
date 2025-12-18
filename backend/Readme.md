@@ -1,0 +1,224 @@
+# Backend SIPRAK
+## Sistem Peminjaman Ruang dan Fasilitas Kampus
+
+Backend SIPRAK merupakan REST API yang dibangun untuk mendukung
+aplikasi Sistem Peminjaman Ruang dan Fasilitas Kampus. Backend ini
+bertanggung jawab dalam pengelolaan autentikasi pengguna, manajemen
+data peminjaman, serta pengamanan akses data menggunakan JSON Web Token
+(JWT).
+
+---
+
+# Dokumentasi API
+
+## Autentikasi
+
+Sebagian besar endpoint membutuhkan token JWT yang dikirim melalui header:
+
+```
+Authorization: Bearer <token>
+```
+
+---
+
+## 1️⃣ Auth API
+
+### Login Pengguna
+
+**Endpoint**
+
+```
+POST /auth/login
+```
+
+**Deskripsi**  
+Digunakan untuk melakukan autentikasi pengguna dan menghasilkan token JWT.
+
+**Request Body**
+
+```json
+{
+  "email": "user@email.com",
+  "password": "password123"
+}
+```
+
+**Response Sukses**
+
+```json
+{
+  "message": "User login successfully",
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+}
+```
+
+**Response Gagal**
+
+```json
+{
+  "message": "Invalid email or password"
+}
+```
+
+---
+
+## 2️⃣ Borrowing API
+
+### Ambil Semua Data Peminjaman
+
+**Endpoint**
+
+```
+GET /borrowings
+```
+
+**Deskripsi**  
+Menampilkan daftar peminjaman milik pengguna yang sedang login.
+
+**Header**
+
+```
+Authorization: Bearer <token>
+```
+
+**Response Sukses**
+
+```json
+{
+  "message": "Borrowings retrieved successfully",
+  "data": [
+    {
+      "id": 1,
+      "title": "Rapat Himpunan",
+      "facility": "Ruang Aula",
+      "borrowDate": "2025-12-20",
+      "returnDate": "2025-12-20",
+      "status": "pending"
+    }
+  ]
+}
+```
+
+---
+
+### Tambah Data Peminjaman
+
+**Endpoint**
+
+```
+POST /borrowings
+```
+
+**Deskripsi**  
+Digunakan untuk mengajukan peminjaman ruang atau fasilitas kampus.
+
+**Header**
+
+```
+Authorization: Bearer <token>
+```
+
+**Request Body**
+
+```json
+{
+  "title": "Seminar Akademik",
+  "facility": "Ruang Seminar",
+  "borrowDate": "2025-12-21",
+  "returnDate": "2025-12-21"
+}
+```
+
+**Response Sukses**
+
+```json
+{
+  "message": "Borrowing created successfully"
+}
+```
+
+**Response Validasi Gagal**
+
+```json
+{
+  "message": "Validation error"
+}
+```
+
+---
+
+### Hapus Data Peminjaman
+
+**Endpoint**
+
+```
+DELETE /borrowings/:id
+```
+
+**Deskripsi**  
+Menghapus data peminjaman berdasarkan ID. Pengguna hanya dapat menghapus data miliknya sendiri.
+
+**Header**
+
+```
+Authorization: Bearer <token>
+```
+
+**Response Sukses**
+
+```json
+{
+  "message": "Borrowing deleted successfully"
+}
+```
+
+**Response Gagal (Bukan Pemilik Data)**
+
+```json
+{
+  "message": "Access denied"
+}
+```
+
+## Struktur Direktori
+
+```
+backend/
+├── prisma/                     # Konfigurasi ORM dan database
+│   ├── migrations/             # Riwayat migrasi database
+│   │   └── 20251217100637_init/
+│   │       └── migration.sql   # SQL hasil generate Prisma
+│   ├── migration_lock.toml     # File pengunci migrasi Prisma
+│   └── schema.prisma           # Skema database (model & relasi)
+│
+├── src/                        # Folder utama source code backend
+│   ├── config/                 # Konfigurasi aplikasi
+│   │   ├── jwt.js              # Konfigurasi JWT (secret & expiry)
+│   │   └── prisma.js           # Inisialisasi Prisma Client
+│   │
+│   ├── controllers/            # Logika bisnis aplikasi
+│   │   ├── authController.js   # Proses autentikasi (login)
+│   │   ├── borrowingController.js # Manajemen peminjaman
+│   │   └── userController.js   # Manajemen data pengguna
+│   │
+│   ├── middleware/             # Middleware keamanan
+│   │   ├── authMiddleware.js   # Proteksi JWT
+│   │   └── ownership.js        # Validasi kepemilikan data
+│   │
+│   ├── routes/                 # Definisi endpoint API
+│   │   ├── authRoutes.js       # Route autentikasi
+│   │   ├── borrowingRoutes.js  # Route peminjaman
+│   │   └── userRoutes.js       # Route user
+│   │
+│   └── validators/             # Validasi input request
+│       ├── authValidator.js    # Validasi login
+│       └── borrowingValidator.js # Validasi peminjaman
+│
+├── .env.example                # Contoh konfigurasi environment
+├── .gitignore                  # File/folder yang diabaikan Git
+├── app.js                      # Konfigurasi Express & middleware
+├── server.js                   # Entry point server backend
+├── package.json                # Konfigurasi project & dependencies
+├── package-lock.json           # Lock versi dependency
+└── README.md                   # Dokumentasi backend SIPRAK
+```
