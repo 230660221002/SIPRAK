@@ -159,15 +159,13 @@ SIPRAK/
 | PUT | `/api/borrowings/:id` | Update peminjaman | ✅ |
 | DELETE | `/api/borrowings/:id` | Hapus peminjaman | ✅ |
 
-> **💡 Catatan:** Untuk dokumentasi API lengkap, lihat [Backend API Documentation](./backend/readme.md#dokumentasi-api)
-
 ---
 
 ## 🔗 Link Dokumentasi Detail
 
-- [Backend API Documentation](./backend/README.md#dokumentasi-api) - Endpoint, Request/Response
-- [Frontend Components](./frontend/README.md#struktur-direktori) - UI Components & Pages
-- [Database Schema](./backend/README.md#database-schema) - Prisma Models
+- [Backend API Documentation](./backend/Readme.md#dokumentasi-api) - Endpoint, Request/Response
+- [Frontend Components](./frontend/Readme.md#struktur-direktori) - UI Components & Pages
+- [Database Schema](./backend/Readme.md#database-schema) - Prisma Models
 
 ---
 
