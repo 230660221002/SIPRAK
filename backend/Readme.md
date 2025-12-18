@@ -214,6 +214,9 @@ Field yang dikirim akan memperbarui data lama. Field `status` dapat diubah sesua
 {
   "message": "Validation error"
 }
+```
+
+---
 
 ### Hapus Data Peminjaman
 
