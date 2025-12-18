@@ -11,8 +11,8 @@ Aplikasi ini memungkinkan pengguna untuk melakukan autentikasi, mengajukan pemin
 
 Untuk dokumentasi lengkap, silakan lihat:
 
-- **[📖 Backend Documentation](./backend/README.md)** - REST API, Database, dan Server Configuration
-- **[🎨 Frontend Documentation](./frontend/README.md)** - UI Components, Pages, dan Client Configuration
+- **[📖 Backend Documentation](./backend/Readme.md)** - REST API, Database, dan Server Configuration
+- **[🎨 Frontend Documentation](./frontend/Readme.md)** - UI Components, Pages, dan Client Configuration
 
 ---
 
