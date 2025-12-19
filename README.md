@@ -1,183 +1,295 @@
-# SIPRAK  
+# Backend SIPRAK
 ## Sistem Peminjaman Ruang dan Fasilitas Kampus
 
-SIPRAK (Sistem Peminjaman Ruang dan Fasilitas Kampus) merupakan aplikasi berbasis web yang dirancang untuk membantu pengelolaan peminjaman ruang dan fasilitas di lingkungan kampus secara terstruktur, efisien, dan terkomputerisasi.
-
-Aplikasi ini memungkinkan pengguna untuk melakukan autentikasi, mengajukan peminjaman fasilitas, serta memantau status peminjaman yang diajukan. Sistem dibangun dengan arsitektur client–server menggunakan REST API.
-
----
-
-## 📚 Dokumentasi
-
-Untuk dokumentasi lengkap, silakan lihat:
-
-- **[📖 Backend Documentation](./backend/Readme.md)** - REST API, Database, dan Server Configuration
-- **[🎨 Frontend Documentation](./frontend/Readme.md)** - UI Components, Pages, dan Client Configuration
+Backend SIPRAK merupakan REST API yang dibangun untuk mendukung
+aplikasi Sistem Peminjaman Ruang dan Fasilitas Kampus. Backend ini
+bertanggung jawab dalam pengelolaan autentikasi pengguna, manajemen
+data peminjaman, serta pengamanan akses data menggunakan JSON Web Token
+(JWT).
 
 ---
 
-## Deskripsi Aplikasi
+# Dokumentasi API
 
-SIPRAK bertujuan untuk menggantikan proses peminjaman manual yang masih mengandalkan pencatatan konvensional, sehingga dapat meminimalkan kesalahan data, meningkatkan transparansi, dan mempermudah monitoring status peminjaman.
+## Autentikasi
 
-### Fitur Utama
+Sebagian besar endpoint membutuhkan token JWT yang dikirim melalui header:
 
-- Autentikasi pengguna menggunakan JSON Web Token (JWT)
-- Pengajuan peminjaman ruang dan fasilitas kampus
-- Menampilkan status peminjaman (pending, approved, rejected)
-- Penghapusan data peminjaman
-- Manajemen sesi pengguna (logout)
+```
+Authorization: Bearer <token>
+```
 
 ---
 
-## Teknologi yang Digunakan
+## 1️⃣ Auth API
 
-### Backend
-- Node.js
-- Express.js
-- Prisma ORM
-- MySQL
-- JSON Web Token (JWT)
+### Login Pengguna
 
-### Frontend
-- React (Vite)
-- Tailwind CSS
-- Axios
+**Endpoint**
+
+```
+POST /auth/login
+```
+
+**Deskripsi**  
+Digunakan untuk melakukan autentikasi pengguna dan menghasilkan token JWT.
+
+**Request Body**
+
+```json
+{
+  "email": "user@email.com",
+  "password": "password123"
+}
+```
+
+**Response Sukses**
+
+```json
+{
+  "message": "User login successfully",
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+}
+```
+
+**Response Gagal**
+
+```json
+{
+  "message": "Invalid email or password"
+}
+```
 
 ---
 
-## Entity Relationship Diagram (ERD)
+## 2️⃣ Borrowing API
 
-Secara konseptual, sistem SIPRAK terdiri dari dua entitas utama:
+### Ambil Semua Data Peminjaman
 
-**User**
-- id
-- name
-- email
-- password
+**Endpoint**
 
-**Borrowing**
-- id
-- title
-- facility
-- borrowDate
-- returnDate
-- status
-- userId
+```
+GET /borrowings
+```
 
-**Relasi:** Satu user dapat memiliki banyak data peminjaman (one-to-many).
+**Deskripsi**  
+Menampilkan daftar peminjaman milik pengguna yang sedang login.
+
+**Header**
+
+```
+Authorization: Bearer <token>
+```
+
+**Response Sukses**
+
+```json
+{
+  "message": "Borrowings retrieved successfully",
+  "data": [
+    {
+      "id": 1,
+      "title": "Rapat Himpunan",
+      "facility": "Ruang Aula",
+      "borrowDate": "2025-12-20",
+      "returnDate": "2025-12-20",
+      "status": "pending"
+    }
+  ]
+}
+```
 
 ---
 
-## 🚀 Quick Start
+### Tambah Data Peminjaman
 
-### Prasyarat
+**Endpoint**
 
-- Node.js (v14 atau lebih baru)
-- MySQL
-- npm atau yarn
-
-### Menjalankan Backend
-
-1. Masuk ke folder backend
-```bash
-cd backend
-npm install
+```
+POST /borrowings
 ```
 
-2. Salin file environment
-```bash
-cp .env.example .env
+**Deskripsi**  
+Digunakan untuk mengajukan peminjaman ruang atau fasilitas kampus.
+
+**Header**
+
+```
+Authorization: Bearer <token>
 ```
 
-3. Konfigurasikan database pada file `.env`
+**Request Body**
 
-4. Jalankan migrasi database
-```bash
-npx prisma migrate dev
+```json
+{
+  "title": "Seminar Akademik",
+  "facility": "Ruang Seminar",
+  "borrowDate": "2025-12-21",
+  "returnDate": "2025-12-21"
+}
 ```
 
-5. Jalankan server backend
-```bash
-npm start
-# atau
-nodemon server.js
+**Response Sukses**
+
+```json
+{
+  "message": "Borrowing created successfully"
+}
 ```
 
-Backend akan berjalan pada: `http://localhost:3000`
+**Response Validasi Gagal**
+
+```json
+{
+  "message": "Validation error"
+}
+```
 
 ---
 
-### Menjalankan Frontend
+### Update Data Peminjaman
 
-1. Masuk ke folder frontend
-```bash
-cd frontend
-npm install
+**Endpoint**
+
+```
+PUT /borrowings/:id
 ```
 
-2. Jalankan aplikasi
-```bash
-npm run dev
+**Deskripsi**  
+Digunakan untuk memperbarui data peminjaman ruang atau fasilitas kampus. Pengguna hanya dapat memperbarui data peminjaman miliknya sendiri.
+
+**Header**
+
+```
+Authorization: Bearer <token>
 ```
 
-Frontend akan berjalan pada: `http://localhost:5173`
+**Parameter URL**
+
+```
+id: number (ID peminjaman)
+```
+
+**Request Body**
+
+```json
+{
+  "title": "Seminar Nasional",
+  "facility": "Ruang Aula",
+  "borrowDate": "2025-12-22",
+  "returnDate": "2025-12-22",
+  "status": "pending"
+}
+```
+
+Field yang dikirim akan memperbarui data lama. Field `status` dapat diubah sesuai kebutuhan sistem.
+
+**Response Sukses**
+
+```json
+{
+  "message": "Borrowing updated successfully"
+}
+```
+
+**Response Gagal (Data Tidak Ditemukan)**
+
+```json
+{
+  "message": "Borrowing not found"
+}
+```
+
+**Response Gagal (Bukan Pemilik Data)**
+
+```json
+{
+  "message": "Access denied"
+}
+```
+
+**Response Validasi Gagal**
+
+```json
+{
+  "message": "Validation error"
+}
+```
 
 ---
 
-## 📂 Struktur Project
+### Hapus Data Peminjaman
+
+**Endpoint**
 
 ```
-SIPRAK/
-├── backend/           # REST API & Database
-│   ├── prisma/       # Database schema & migrations
-│   ├── src/          # Source code backend
-│   └── Readme.md     # Dokumentasi backend
+DELETE /borrowings/:id
+```
+
+**Deskripsi**  
+Menghapus data peminjaman berdasarkan ID. Pengguna hanya dapat menghapus data miliknya sendiri.
+
+**Header**
+
+```
+Authorization: Bearer <token>
+```
+
+**Response Sukses**
+
+```json
+{
+  "message": "Borrowing deleted successfully"
+}
+```
+
+**Response Gagal (Bukan Pemilik Data)**
+
+```json
+{
+  "message": "Access denied"
+}
+```
+
+## Struktur Direktori
+
+```
+backend/
+├── prisma/                     # Konfigurasi ORM dan database
+│   ├── migrations/             # Riwayat migrasi database
+│   │   └── 20251217100637_init/
+│   │       └── migration.sql   # SQL hasil generate Prisma
+│   ├── migration_lock.toml     # File pengunci migrasi Prisma
+│   └── schema.prisma           # Skema database (model & relasi)
 │
-├── frontend/          # React Application
-│   ├── public/       # Static files
-│   ├── src/          # Source code frontend
-│   └── Readme.md     # Dokumentasi frontend
+├── src/                        # Folder utama source code backend
+│   ├── config/                 # Konfigurasi aplikasi
+│   │   ├── jwt.js              # Konfigurasi JWT (secret & expiry)
+│   │   └── prisma.js           # Inisialisasi Prisma Client
+│   │
+│   ├── controllers/            # Logika bisnis aplikasi
+│   │   ├── authController.js   # Proses autentikasi (login)
+│   │   ├── borrowingController.js # Manajemen peminjaman
+│   │   └── userController.js   # Manajemen data pengguna
+│   │
+│   ├── middleware/             # Middleware keamanan
+│   │   ├── authMiddleware.js   # Proteksi JWT
+│   │   └── ownership.js        # Validasi kepemilikan data
+│   │
+│   ├── routes/                 # Definisi endpoint API
+│   │   ├── authRoutes.js       # Route autentikasi
+│   │   ├── borrowingRoutes.js  # Route peminjaman
+│   │   └── userRoutes.js       # Route user
+│   │
+│   └── validators/             # Validasi input request
+│       ├── authValidator.js    # Validasi login
+│       └── borrowingValidator.js # Validasi peminjaman
 │
-└── Readme.md         # Dokumentasi utama (file ini)
+├── .env.example                # Contoh konfigurasi environment
+├── .gitignore                  # File/folder yang diabaikan Git
+├── app.js                      # Konfigurasi Express & middleware
+├── server.js                   # Entry point server backend
+├── package.json                # Konfigurasi project & dependencies
+├── package-lock.json           # Lock versi dependency
+└── README.md                   # Dokumentasi backend SIPRAK
 ```
-
----
-
-## 🔗 API Endpoints
-
-### Authentication
-| Method | Endpoint | Description | Auth Required |
-|--------|----------|-------------|---------------|
-| POST | `/api/auth/login` | Login pengguna | ❌ |
-
-### Borrowing Management
-| Method | Endpoint | Description | Auth Required |
-|--------|----------|-------------|---------------|
-| GET | `/api/borrowings` | Ambil semua peminjaman user | ✅ |
-| POST | `/api/borrowings` | Tambah peminjaman baru | ✅ |
-| PUT | `/api/borrowings/:id` | Update peminjaman | ✅ |
-| DELETE | `/api/borrowings/:id` | Hapus peminjaman | ✅ |
-
----
-
-## 🔗 Link Dokumentasi Detail
-
-- [Backend API Documentation](./backend/Readme.md#dokumentasi-api) - Endpoint, Request/Response
-- [Frontend Components](./frontend/Readme.md#struktur-direktori) - UI Components & Pages
-- [Database Schema](./backend/Readme.md#database-schema) - Prisma Models
-
----
-
-## 👥 Kontributor
-
-- Galih Permana Sidik
-- 230660221002
-- SI-VA
-
----
-
-## © Copyright
-
-© 2025 Galih Permana Sidik.  
-All Rights Reserved.
