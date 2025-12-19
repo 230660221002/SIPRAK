@@ -36,21 +36,4 @@ app.use((req, res, next) => {
   });
 });
 
-// Global error handler - TAMBAHKAN INI
-app.use((err, req, res, next) => {
-  console.error('Error Details:', {
-    message: err.message,
-    stack: err.stack,
-    body: req.body
-  });
-  
-  res.status(err.status || 500).json({
-    status: 'error',
-    message: err.message || 'Internal server error',
-    ...(process.env.NODE_ENV !== 'production' && { 
-      stack: err.stack 
-    })
-  });
-});
-
 module.exports = app;
