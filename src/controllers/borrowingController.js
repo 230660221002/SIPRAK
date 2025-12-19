@@ -3,23 +3,40 @@ const prisma = require('../config/prisma');
 /**
  * CREATE Borrowing
  */
-exports.create = async (req, res) => {
-  const { borrowDate, returnDate, ...rest } = req.body;
+const { validationResult } = require('express-validator');
 
-  const data = await prisma.borrowing.create({
-    data: {
-      ...rest,
-      borrowDate: borrowDate ? new Date(borrowDate) : undefined,
-      returnDate: returnDate ? new Date(returnDate) : undefined,
-      userId: req.user.id
+exports.create = async (req, res, next) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({
+        message: 'Validation error',
+        errors: errors.array()
+      });
     }
-  });
 
-  res.status(201).json({
-    message: 'Borrowing created successfully',
-    data
-  });
+    const { title, facility, borrowDate, returnDate } = req.body;
+
+    const data = await prisma.borrowing.create({
+      data: {
+        title,
+        facility,
+        borrowDate: new Date(borrowDate),
+        returnDate: new Date(returnDate),
+        userId: req.user.id
+      }
+    });
+
+    res.status(201).json({
+      message: 'Borrowing created successfully',
+      data
+    });
+  } catch (error) {
+    next(error);
+  }
 };
+
+
 
 /**
  * GET All Borrowings (by logged user)
@@ -38,23 +55,29 @@ exports.findAll = async (req, res) => {
 /**
  * UPDATE Borrowing
  */
-exports.update = async (req, res) => {
-  const { borrowDate, returnDate, ...rest } = req.body;
+exports.update = async (req, res, next) => {
+  try {
+    const { title, facility, borrowDate, returnDate } = req.body;
 
-  const data = await prisma.borrowing.update({
-    where: { id: Number(req.params.id) },
-    data: {
-      ...rest,
-      borrowDate: borrowDate ? new Date(borrowDate) : undefined,
-      returnDate: returnDate ? new Date(returnDate) : undefined
-    }
-  });
+    const data = await prisma.borrowing.update({
+      where: { id: Number(req.params.id) },
+      data: {
+        title,
+        facility,
+        borrowDate: borrowDate ? new Date(borrowDate) : undefined,
+        returnDate: returnDate ? new Date(returnDate) : undefined
+      }
+    });
 
-  res.json({
-    message: 'Borrowing updated successfully',
-    data
-  });
+    res.json({
+      message: 'Borrowing updated successfully',
+      data
+    });
+  } catch (error) {
+    next(error);
+  }
 };
+
 
 /**
  * DELETE Borrowing
