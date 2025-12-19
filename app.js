@@ -29,10 +29,27 @@ app.use('/api/users', userRoutes);
 app.use('/api/borrowings', borrowingRoutes);
 
 // 404 handler
-app.use((req, res) => {
+app.use((req, res, next) => {
   res.status(404).json({
     status: 'error',
     message: 'Route not found'
+  });
+});
+
+// Global error handler - TAMBAHKAN INI
+app.use((err, req, res, next) => {
+  console.error('Error Details:', {
+    message: err.message,
+    stack: err.stack,
+    body: req.body
+  });
+  
+  res.status(err.status || 500).json({
+    status: 'error',
+    message: err.message || 'Internal server error',
+    ...(process.env.NODE_ENV !== 'production' && { 
+      stack: err.stack 
+    })
   });
 });
 
