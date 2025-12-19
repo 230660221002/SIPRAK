@@ -60,21 +60,6 @@ try {
   console.error('✗ Failed to load borrowingRoutes:', err.message);
 }
 
-// DEBUG: List all registered routes
-console.log('\nRegistered routes:');
-app._router.stack.forEach((middleware) => {
-  if (middleware.route) {
-    console.log(`  ${Object.keys(middleware.route.methods)} ${middleware.route.path}`);
-  } else if (middleware.name === 'router') {
-    middleware.handle.stack.forEach((handler) => {
-      if (handler.route) {
-        const path = middleware.regexp.source.replace('\\/?', '').replace('(?=\\/|$)', '');
-        console.log(`  ${Object.keys(handler.route.methods)} ${path}${handler.route.path}`);
-      }
-    });
-  }
-});
-
 // 404 handler
 app.use((req, res, next) => {
   console.log(`404 - Route not found: ${req.method} ${req.originalUrl}`);
