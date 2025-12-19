@@ -1,4 +1,16 @@
-const { body } = require('express-validator');
+const { body, validationResult } = require('express-validator');
+
+// Middleware untuk handle validation errors
+const handleValidationErrors = (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({
+      status: 'error',
+      errors: errors.array()
+    });
+  }
+  next();
+};
 
 exports.registerValidator = [
   body('name')
@@ -11,7 +23,9 @@ exports.registerValidator = [
 
   body('password')
     .notEmpty().withMessage('Password is required')
-    .isLength({ min: 6 }).withMessage('Password min 6 characters')
+    .isLength({ min: 6 }).withMessage('Password min 6 characters'),
+  
+  handleValidationErrors  
 ];
 
 exports.loginValidator = [
@@ -20,5 +34,7 @@ exports.loginValidator = [
     .isEmail().withMessage('Invalid email format'),
 
   body('password')
-    .notEmpty().withMessage('Password is required')
+    .notEmpty().withMessage('Password is required'),
+  
+  handleValidationErrors  
 ];
