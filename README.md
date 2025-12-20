@@ -23,6 +23,52 @@ Authorization: Bearer <token>
 
 ## 1️⃣ Auth API
 
+### Register Pengguna
+
+**Endpoint**
+
+```
+POST /auth/register
+```
+
+**Deskripsi**
+Digunakan untuk mendaftarkan pengguna baru ke dalam sistem SIPRAK. Data pengguna akan disimpan ke database dengan password yang telah dienkripsi menggunakan bcrypt.
+
+**Request Body**
+
+```json
+{
+  "name": "user123",
+  "email": "user@gmail.com",
+  "password": "password123"
+}
+```
+
+**Response Sukses**
+
+```json
+{
+  "message": "Register success"
+}
+```
+
+**Response Gagal (Validasi Input)**
+
+```json
+{
+  "message": "Name, email, and password are required"
+}
+```
+
+**Response Gagal (Email Sudah Terdaftar)**
+
+```json
+{
+  "message": "Email already registered"
+}
+```
+
+---
 ### Login Pengguna
 
 **Endpoint**
@@ -38,7 +84,7 @@ Digunakan untuk melakukan autentikasi pengguna dan menghasilkan token JWT.
 
 ```json
 {
-  "email": "user@email.com",
+  "email": "user@gmail.com",
   "password": "password123"
 }
 ```
@@ -62,7 +108,7 @@ Digunakan untuk melakukan autentikasi pengguna dan menghasilkan token JWT.
 
 ---
 
-## 2️⃣ Borrowing API
+## 2️ Borrowing API
 
 ### Ambil Semua Data Peminjaman
 
@@ -85,16 +131,18 @@ Authorization: Bearer <token>
 
 ```json
 {
-  "message": "Borrowings retrieved successfully",
+  "message": "Get all borrowings successfully",
   "data": [
     {
       "id": 1,
       "title": "Rapat Himpunan",
       "facility": "Ruang Aula",
-      "borrowDate": "2025-12-20",
-      "returnDate": "2025-12-20",
-      "status": "pending"
-    }
+      "borrowDate": "2025-12-20T08:00:00.000Z",
+      "returnDate": "2025-12-20T13:00:00.000Z",
+      "status": "pending",
+      "userId": 3,
+      "createdAt": "2025-12-20T03:12:19.638Z"
+        },
   ]
 }
 ```
@@ -122,10 +170,10 @@ Authorization: Bearer <token>
 
 ```json
 {
-  "title": "Seminar Akademik",
+  "title": "Seminar Telkomsel",
   "facility": "Ruang Seminar",
-  "borrowDate": "2025-12-21",
-  "returnDate": "2025-12-21"
+  "borrowDate": "2025-12-24T08:00:00.000Z",
+  "returnDate": "2025-12-24T16:00:00.000Z"
 }
 ```
 
@@ -133,7 +181,17 @@ Authorization: Bearer <token>
 
 ```json
 {
-  "message": "Borrowing created successfully"
+    "message": "Borrowing created successfully",
+    "data": {
+        "id": 7,
+        "title": "Seminar Telkomsel",
+        "facility": "Ruang Seminar",
+        "borrowDate": "2025-12-24T08:00:00.000Z",
+        "returnDate": "2025-12-24T16:00:00.000Z",
+        "status": "pending",
+        "userId": 3,
+        "createdAt": "2025-12-20T03:46:43.974Z"
+    }
 }
 ```
 
@@ -174,11 +232,11 @@ id: number (ID peminjaman)
 
 ```json
 {
-  "title": "Seminar Nasional",
-  "facility": "Ruang Aula",
-  "borrowDate": "2025-12-22",
-  "returnDate": "2025-12-22",
-  "status": "pending"
+      "id": 7,
+      "title": "Seminar Telkomsel",
+      "facility": "Ruang Aula",
+      "borrowDate": "2025-12-22T09:00:00.000Z",
+      "returnDate": "2025-12-22T15:00:00.000Z",
 }
 ```
 
@@ -188,7 +246,17 @@ Field yang dikirim akan memperbarui data lama. Field `status` dapat diubah sesua
 
 ```json
 {
-  "message": "Borrowing updated successfully"
+  "message": "Borrowing updated successfully",
+    "data": {
+        "id": 7,
+        "title": "Seminar Telkomsel",
+        "facility": "Ruang Aula",
+        "borrowDate": "2025-12-24T08:00:00.000Z",
+        "returnDate": "2025-12-24T16:00:00.000Z",
+        "status": "pending",
+        "userId": 3,
+        "createdAt": "2025-12-20T03:46:43.974Z"
+    }
 }
 ```
 
@@ -204,7 +272,7 @@ Field yang dikirim akan memperbarui data lama. Field `status` dapat diubah sesua
 
 ```json
 {
-  "message": "Access denied"
+  "message": "Forbidden"
 }
 ```
 
@@ -291,5 +359,5 @@ backend/
 ├── server.js                   # Entry point server backend
 ├── package.json                # Konfigurasi project & dependencies
 ├── package-lock.json           # Lock versi dependency
-└── README.md                   # Dokumentasi backend SIPRAK
+└── Readme.md                   # Dokumentasi backend SIPRAK
 ```
