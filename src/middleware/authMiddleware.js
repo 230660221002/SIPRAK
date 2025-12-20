@@ -1,11 +1,19 @@
 const jwt = require('jsonwebtoken');
-const { secret } = require('../config/jwt');
+
+const secret = process.env.JWT_SECRET;
 
 module.exports = (req, res, next) => {
   const authHeader = req.headers.authorization;
 
-  if (!authHeader)
+  if (!authHeader) {
     return res.status(401).json({ message: 'Token required' });
+  }
+
+  if (!secret) {
+    return res.status(500).json({
+      message: 'JWT secret not configured'
+    });
+  }
 
   const token = authHeader.split(' ')[1];
 
@@ -13,7 +21,9 @@ module.exports = (req, res, next) => {
     const decoded = jwt.verify(token, secret);
     req.user = decoded;
     next();
-  } catch {
-    res.status(401).json({ message: 'Invalid token' });
+  } catch (err) {
+    return res.status(401).json({
+      message: 'Invalid or expired token'
+    });
   }
 };
