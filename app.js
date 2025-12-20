@@ -7,17 +7,16 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// DEBUG: Log all requests
+// ===== DEBUG REQUEST =====
 app.use((req, res, next) => {
-  console.log('='.repeat(50));
-  console.log(`[${new Date().toISOString()}] ${req.method} ${req.originalUrl}`);
-  console.log('Headers:', req.headers);
+  console.log('='.repeat(40));
+  console.log(`${req.method} ${req.originalUrl}`);
   console.log('Body:', req.body);
-  console.log('='.repeat(50));
+  console.log('='.repeat(40));
   next();
 });
 
-// Root endpoint
+// ===== ROOT =====
 app.get('/', (req, res) => {
   res.json({
     status: 'success',
@@ -30,48 +29,29 @@ app.get('/', (req, res) => {
   });
 });
 
-// DEBUG: Try to load routes
+// ===== ROUTES =====
 console.log('Loading routes...');
 
-try {
-  const authRoutes = require('./src/routes/authRoutes');
-  console.log('✓ authRoutes loaded');
-  app.use('/api/auth', authRoutes);
-  console.log('✓ authRoutes mounted at /api/auth');
-} catch (err) {
-  console.error('✗ Failed to load authRoutes:', err.message);
-}
+app.use('/api/auth', require('./src/routes/authRoutes'));
+console.log('✓ authRoutes mounted');
 
-try {
-  const userRoutes = require('./src/routes/userRoutes');
-  console.log('✓ userRoutes loaded');
-  app.use('/api/users', userRoutes);
-  console.log('✓ userRoutes mounted at /api/users');
-} catch (err) {
-  console.error('✗ Failed to load userRoutes:', err.message);
-}
+app.use('/api/users', require('./src/routes/userRoutes'));
+console.log('✓ userRoutes mounted');
 
-try {
-  const borrowingRoutes = require('./src/routes/borrowingRoutes');
-  console.log('✓ borrowingRoutes loaded');
-  app.use('/api/borrowings', borrowingRoutes);
-  console.log('✓ borrowingRoutes mounted at /api/borrowings');
-} catch (err) {
-  console.error('✗ Failed to load borrowingRoutes:', err.message);
-}
+app.use('/api/borrowings', require('./src/routes/borrowingRoutes'));
+console.log('✓ borrowingRoutes mounted');
 
-// 404 handler
-app.use((req, res, next) => {
-  console.log(`404 - Route not found: ${req.method} ${req.originalUrl}`);
+// ===== 404 =====
+app.use((req, res) => {
   res.status(404).json({
     status: 'error',
     message: 'Route not found'
   });
 });
 
-// Error handler
+// ===== ERROR HANDLER =====
 app.use((err, req, res, next) => {
-  console.error('Error handler triggered:', err);
+  console.error(err);
   res.status(err.status || 500).json({
     status: 'error',
     message: err.message || 'Internal server error'
