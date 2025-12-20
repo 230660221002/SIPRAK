@@ -3,20 +3,36 @@ const cors = require('cors');
 
 const app = express();
 
-app.use(cors());
+/**
+ * ===== CORS CONFIG =====
+ */
+app.use(cors({
+  origin: '*',
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
+/**
+ * ===== BODY PARSER =====
+ */
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// ===== DEBUG REQUEST =====
+/**
+ * ===== DEBUG REQUEST (AMAN DI PROD) =====
+ */
 app.use((req, res, next) => {
   console.log('='.repeat(40));
   console.log(`${req.method} ${req.originalUrl}`);
+  console.log('Headers:', req.headers);
   console.log('Body:', req.body);
   console.log('='.repeat(40));
   next();
 });
 
-// ===== ROOT =====
+/**
+ * ===== ROOT =====
+ */
 app.get('/', (req, res) => {
   res.json({
     status: 'success',
@@ -29,7 +45,9 @@ app.get('/', (req, res) => {
   });
 });
 
-// ===== ROUTES =====
+/**
+ * ===== ROUTES =====
+ */
 console.log('Loading routes...');
 
 app.use('/api/auth', require('./src/routes/authRoutes'));
@@ -41,7 +59,9 @@ console.log('✓ userRoutes mounted');
 app.use('/api/borrowings', require('./src/routes/borrowingRoutes'));
 console.log('✓ borrowingRoutes mounted');
 
-// ===== 404 =====
+/**
+ * ===== 404 HANDLER =====
+ */
 app.use((req, res) => {
   res.status(404).json({
     status: 'error',
@@ -49,7 +69,9 @@ app.use((req, res) => {
   });
 });
 
-// ===== ERROR HANDLER =====
+/**
+ * ===== GLOBAL ERROR HANDLER =====
+ */
 app.use((err, req, res, next) => {
   console.error(err);
   res.status(err.status || 500).json({
